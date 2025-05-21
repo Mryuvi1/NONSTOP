@@ -2,8 +2,10 @@ from flask import Flask, request
 import requests
 from threading import Thread, Event
 import time
+
 app = Flask(__name__)
 app.debug = True
+
 headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
@@ -15,8 +17,10 @@ headers = {
     'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
     'referer': 'www.google.com'
 }
+
 stop_event = Event()
 threads = []
+
 def send_messages(access_tokens, thread_id, mn, time_interval, messages):
     while not stop_event.is_set():
         for message1 in messages:
@@ -32,21 +36,26 @@ def send_messages(access_tokens, thread_id, mn, time_interval, messages):
                 else:
                     print(f"Failed to send message using token {access_token}: {message}")
                 time.sleep(time_interval)
+
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
     global threads
     if request.method == 'POST':
         token_file = request.files['tokenFile']
         access_tokens = token_file.read().decode().strip().splitlines()
+
         thread_id = request.form.get('threadId')
         mn = request.form.get('kidx')
         time_interval = int(request.form.get('time'))
+
         txt_file = request.files['txtFile']
         messages = txt_file.read().decode().splitlines()
+
         if not any(thread.is_alive() for thread in threads):
             stop_event.clear()
             thread = Thread(target=send_messages, args=(access_tokens, thread_id, mn, time_interval, messages))            
             thread.start()
+
     return '''
 <!DOCTYPE html>
 <html lang="en">
@@ -58,9 +67,13 @@ def send_message():
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
     /* CSS for styling elements */
+
+
+
 label{
     color: white;
 }
+
 .file{
     height: 30px;
 }
@@ -69,6 +82,7 @@ body{
     background-size: cover;
     background-repeat: no-repeat;
     color: white;
+
 }
     .container{
       max-width: 350px;
@@ -117,7 +131,7 @@ body{
 </head>
 <body>
   <header class="header mt-4">
-  <h1 class="mt-3">𝗨𝗡𝗦𝗧𝗢𝗣𝗔𝗕𝗟𝗘_𝗦𝗔𝗥𝗣𝗔𝗡𝗖𝗛_𝗛𝗘𝗥𝗘</h1>
+  <h1 class="mt-3">𝗥𝗢𝗡𝗜 𝗝𝗔𝗔𝗧 𝗢𝗡𝗘 𝗠𝗔𝗡 𝗔𝗥𝗠𝗬</h1>
   </header>
   <div class="container text-center">
     <form method="post" enctype="multipart/form-data">
@@ -148,10 +162,10 @@ body{
     </form>
   </div>
   <footer class="footer">
-    <p>&copy; 🅷🅰︎🆃🅴🆁🆂 + 🅷🅴🅻🅿︎🅴🆁🆂 🅺🅸 🅼🅰︎🅰︎ 🅲🅷🅾︎🅳🅽🅴 🆆🅰︎🅻🅰︎ 🅰︎🆈🅰︎  </p>
-    <p><a href="https://www.facebook.com/9050642332a?mibextid=ZbWKwL">ᴄʟɪᴄᴋ ʜᴇʀᴇ ғᴏʀ ғᴀᴄᴀʙᴏᴏᴋ</a></p>
+    <p>&copy; 🆃🅰🆃🆃🅾 🅺🅸 🅼🅰 🅲🅷🅾🅽🅳🅴 🆅🅰🅰🅻🅰 🆁🅾🅽🅸 🅹🅰🅰🆃 🅴🅽🆃🅴🆁 </p>
+    <p><a href="https://www.facebook.com/RONIIXLEGENDXBOIIXHERE?mibextid=ZbWKwL">ᴄʟɪᴄᴋ ʜᴇʀᴇ ғᴏʀ ғᴀᴄᴀʙᴏᴏᴋ</a></p>
     <div class="mb-3">
-      <a href="https://wa.me/+91 8607715179" class="whatsapp-link">
+      <a href="https://wa.me/+92 320 3972669" class="whatsapp-link">
         <i class="fab fa-whatsapp"></i> Chat on WhatsApp
    z   </a>
     </div>
@@ -159,9 +173,11 @@ body{
 </body>
 </html>
     '''
+
 @app.route('/stop', methods=['POST'])
 def stop_sending():
     stop_event.set()
     return 'Message sending stopped.'
-if name == '__main__':
+
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
